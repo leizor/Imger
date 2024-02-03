@@ -30,7 +30,7 @@ func Test_Acceptance_GrayScale(t *testing.T) {
 	tearDownTestCase(t, gray, "../res/grayscale/gray.jpg")
 }
 
-func Test_Acceptange_GrayScale(t *testing.T) {
+func Test_Acceptangce_GrayScale(t *testing.T) {
 	rgba := setupTestCaseRGBA(t)
 	cropped := rgba.SubImage(image.Rect(100, 100, rgba.Bounds().Max.X-100, rgba.Bounds().Max.Y-100))
 	gray := Grayscale(cropped)
