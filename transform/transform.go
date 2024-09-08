@@ -2,9 +2,10 @@ package transform
 
 import (
 	"errors"
-	"github.com/ernyoke/imger/utils"
 	"image"
 	"math"
+
+	"github.com/ernyoke/imger/utils"
 )
 
 // RotateGray rotates a grayscale image counterclockwise with a given angle. The point which will represent the center
@@ -12,10 +13,10 @@ import (
 // resized to fit in the area of the image.
 // Example of usage:
 //
-// 		res, err := transform.RotateGray(img, 90.0, {512, 512}, true)
-//
+//	res, err := transform.RotateGray(img, 90.0, {512, 512}, true)
 func RotateGray(img *image.Gray, angle float64, anchor image.Point, resizeToFit bool) (*image.Gray, error) {
 	size := img.Bounds().Size()
+	offset := img.Bounds().Min
 	if anchor.X < 0 || anchor.Y < 0 || anchor.X > size.X || anchor.Y > size.Y {
 		return nil, errors.New("invalid anchor position")
 	}
@@ -25,8 +26,9 @@ func RotateGray(img *image.Gray, angle float64, anchor image.Point, resizeToFit 
 		newSize = computeFitSize(size, radians)
 	}
 	result := image.NewGray(image.Rect(0, 0, newSize.X, newSize.Y))
-	utils.ParallelForEachPixel(newSize, func(x, y int) {
-		result.SetGray(x, y, img.GrayAt(getOriginalPixelPosition(x, y, radians, anchor, computeOffset(size, newSize))))
+	utils.IteratePixels(newSize, func(x, y int) {
+		pixel := img.GrayAt(getOriginalPixelPosition(x+offset.X, y+offset.Y, radians, anchor, computeOffset(size, newSize)))
+		result.SetGray(x, y, pixel)
 	})
 	return result, nil
 }
@@ -36,10 +38,10 @@ func RotateGray(img *image.Gray, angle float64, anchor image.Point, resizeToFit 
 // resized to fit in the area of the image.
 // Example of usage:
 //
-// 		res, err := transform.RotateGray(img, 90.0, {512, 512}, true)
-//
+//	res, err := transform.RotateGray(img, 90.0, {512, 512}, true)
 func RotateRGBA(img *image.RGBA, angle float64, anchor image.Point, resizeToFit bool) (*image.RGBA, error) {
 	size := img.Bounds().Size()
+	offset := img.Bounds().Min
 	if anchor.X < 0 || anchor.Y < 0 || anchor.X > size.X || anchor.Y > size.Y {
 		return nil, errors.New("invalid anchor position")
 	}
@@ -49,8 +51,9 @@ func RotateRGBA(img *image.RGBA, angle float64, anchor image.Point, resizeToFit 
 		newSize = computeFitSize(size, radians)
 	}
 	result := image.NewRGBA(image.Rect(0, 0, newSize.X, newSize.Y))
-	utils.ParallelForEachPixel(newSize, func(x, y int) {
-		result.SetRGBA(x, y, img.RGBAAt(getOriginalPixelPosition(x, y, radians, anchor, computeOffset(size, newSize))))
+	utils.IteratePixels(newSize, func(x, y int) {
+		pixel := img.RGBAAt(getOriginalPixelPosition(x+offset.X, y+offset.Y, radians, anchor, computeOffset(size, newSize)))
+		result.SetRGBA(x, y, pixel)
 	})
 	return result, nil
 }

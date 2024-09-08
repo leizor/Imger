@@ -1,28 +1,29 @@
 package convolution
 
 import (
-	"github.com/ernyoke/imger/padding"
-	"github.com/ernyoke/imger/utils"
 	"image"
 	"image/color"
+
+	"github.com/ernyoke/imger/padding"
+	"github.com/ernyoke/imger/utils"
 )
 
 // ConvolveGray applies a convolution matrix (kernel) to a grayscale image.
 // Example of usage:
 //
-// 		res, err := convolution.ConvolveGray(img, kernel, {1, 1}, BorderReflect)
+//	res, err := convolution.ConvolveGray(img, kernel, {1, 1}, BorderReflect)
 //
 // Note: the anchor represents a point inside the area of the kernel. After every step of the convolution the position
 // specified by the anchor point gets updated on the result image.
 func ConvolveGray(img *image.Gray, kernel *Kernel, anchor image.Point, border padding.Border) (*image.Gray, error) {
 	kernelSize := kernel.Size()
-	padded, error := padding.PaddingGray(img, kernelSize, anchor, border)
-	if error != nil {
-		return nil, error
+	padded, err := padding.PaddingGray(img, kernelSize, anchor, border)
+	if err != nil {
+		return nil, err
 	}
 	originalSize := img.Bounds().Size()
-	resultImage := image.NewGray(img.Bounds())
-	utils.ParallelForEachPixel(originalSize, func(x int, y int) {
+	resultImage := image.NewGray(image.Rect(0, 0, originalSize.X, originalSize.Y))
+	utils.IteratePixels(originalSize, func(x, y int) {
 		sum := float64(0)
 		for ky := 0; ky < kernelSize.Y; ky++ {
 			for kx := 0; kx < kernelSize.X; kx++ {
@@ -32,7 +33,7 @@ func ConvolveGray(img *image.Gray, kernel *Kernel, anchor image.Point, border pa
 			}
 		}
 		sum = utils.ClampF64(sum, utils.MinUint8, float64(utils.MaxUint8))
-		resultImage.Set(x, y, color.Gray{uint8(sum)})
+		resultImage.Set(x, y, color.Gray{Y: uint8(sum)})
 	})
 	return resultImage, nil
 }
@@ -40,7 +41,7 @@ func ConvolveGray(img *image.Gray, kernel *Kernel, anchor image.Point, border pa
 // ConvolveRGBA applies a convolution matrix (kernel) to an RGBA image.
 // Example of usage:
 //
-// 		res, err := convolution.ConvolveRGBA(img, kernel, {1, 1}, BorderReflect)
+//	res, err := convolution.ConvolveRGBA(img, kernel, {1, 1}, BorderReflect)
 //
 // Note: the anchor represents a point inside the area of the kernel. After every step of the convolution the position
 // specified by the anchor point gets updated on the result image.
@@ -51,8 +52,9 @@ func ConvolveRGBA(img *image.RGBA, kernel *Kernel, anchor image.Point, border pa
 		return nil, err
 	}
 	originalSize := img.Bounds().Size()
-	resultImage := image.NewRGBA(img.Bounds())
-	utils.ParallelForEachPixel(originalSize, func(x int, y int) {
+	offset := img.Bounds().Min
+	resultImage := image.NewRGBA(image.Rect(0, 0, originalSize.X, originalSize.Y))
+	utils.IteratePixels(originalSize, func(x int, y int) {
 		sumR, sumG, sumB := 0.0, 0.0, 0.0
 		for kx := 0; kx < kernelSize.X; kx++ {
 			for ky := 0; ky < kernelSize.Y; ky++ {
@@ -65,7 +67,7 @@ func ConvolveRGBA(img *image.RGBA, kernel *Kernel, anchor image.Point, border pa
 		sumR = utils.ClampF64(sumR, utils.MinUint8, float64(utils.MaxUint8))
 		sumG = utils.ClampF64(sumG, utils.MinUint8, float64(utils.MaxUint8))
 		sumB = utils.ClampF64(sumB, utils.MinUint8, float64(utils.MaxUint8))
-		rgba := img.RGBAAt(x, y)
+		rgba := img.RGBAAt(x+offset.X, y+offset.Y)
 		resultImage.Set(x, y, color.RGBA{uint8(sumR), uint8(sumG), uint8(sumB), rgba.A})
 	})
 	return resultImage, nil

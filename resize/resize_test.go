@@ -1,9 +1,10 @@
 package resize
 
 import (
-	"github.com/ernyoke/imger/imgio"
 	"image"
 	"testing"
+
+	"github.com/ernyoke/imger/imgio"
 )
 
 // -----------------------------Acceptance tests------------------------------------
@@ -45,6 +46,21 @@ func Test_Acceptance_GrayResize_NN_2X(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/resize/grayResize2x.jpg")
 }
 
+func Test_Acceptance_GrayResize_NN_2X_Cropped(t *testing.T) {
+	fxy := 2.0
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	actual, _ := ResizeGray(cropped, fxy, fxy, InterNearest)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/grayResize2x_Cropped.jpg")
+}
+
 func Test_Acceptance_GrayResize_NN_1_5X(t *testing.T) {
 	fxy := 1.5
 	gray := setupTestCaseGray(t)
@@ -56,6 +72,21 @@ func Test_Acceptance_GrayResize_NN_1_5X(t *testing.T) {
 		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
 	}
 	tearDownTestCase(t, actual, "../res/resize/grayResize1_5x.jpg")
+}
+
+func Test_Acceptance_GrayResize_NN_1_5X_Cropped(t *testing.T) {
+	fxy := 1.5
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	actual, _ := ResizeGray(cropped, fxy, fxy, InterNearest)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/grayResize1_5x_Cropped.jpg")
 }
 
 func Test_Acceptance_GrayResize_NN_2_5_AND_3_5X(t *testing.T) {
@@ -72,6 +103,22 @@ func Test_Acceptance_GrayResize_NN_2_5_AND_3_5X(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/resize/grayResize2_5_and_3_5x.jpg")
 }
 
+func Test_Acceptance_GrayResize_NN_2_5_AND_3_5X_Cropped(t *testing.T) {
+	fx := 2.5
+	fy := 3.5
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	actual, _ := ResizeGray(cropped, fx, fy, InterNearest)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fx), Y: int(float64(originalSize.Y) * fy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/grayResize2_5_and_3_5x_Cropped.jpg")
+}
+
 func Test_Acceptance_GrayResize_NN_0_5X(t *testing.T) {
 	fxy := 0.5
 	gray := setupTestCaseGray(t)
@@ -83,6 +130,21 @@ func Test_Acceptance_GrayResize_NN_0_5X(t *testing.T) {
 		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
 	}
 	tearDownTestCase(t, actual, "../res/resize/grayResize0_5x.jpg")
+}
+
+func Test_Acceptance_GrayResize_NN_0_5X_Cropped(t *testing.T) {
+	fxy := 0.5
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	actual, _ := ResizeGray(cropped, fxy, fxy, InterNearest)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/grayResize0_5x_Cropped.jpg")
 }
 
 func Test_Acceptance_GrayResize_Linear_2X(t *testing.T) {
@@ -98,6 +160,21 @@ func Test_Acceptance_GrayResize_Linear_2X(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/resize/grayResize_Linear_2x.jpg")
 }
 
+func Test_Acceptance_GrayResize_Linear_2X_Cropped(t *testing.T) {
+	fxy := 2.0
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	actual, _ := ResizeGray(cropped, fxy, fxy, InterLinear)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/grayResize_Linear_2x_Cropped.jpg")
+}
+
 func Test_Acceptance_GrayResize_CatmullRom_2X(t *testing.T) {
 	fxy := 2.0
 	gray := setupTestCaseGray(t)
@@ -109,6 +186,21 @@ func Test_Acceptance_GrayResize_CatmullRom_2X(t *testing.T) {
 		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
 	}
 	tearDownTestCase(t, actual, "../res/resize/grayResize_CatmullRom_2x.jpg")
+}
+
+func Test_Acceptance_GrayResize_CatmullRom_2X_Cropped(t *testing.T) {
+	fxy := 2.0
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	actual, _ := ResizeGray(cropped, fxy, fxy, InterCatmullRom)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/grayResize_CatmullRom_2x_Cropped.jpg")
 }
 
 func Test_Acceptance_GrayResize_CatmullRom_0_5X(t *testing.T) {
@@ -124,6 +216,21 @@ func Test_Acceptance_GrayResize_CatmullRom_0_5X(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/resize/grayResize_CatmullRom_0_5x.jpg")
 }
 
+func Test_Acceptance_GrayResize_CatmullRom_0_5X_Cropped(t *testing.T) {
+	fxy := 0.5
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	actual, _ := ResizeGray(cropped, fxy, fxy, InterCatmullRom)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/grayResize_CatmullRom_0_5x_Cropped.jpg")
+}
+
 func Test_Acceptance_GrayResize_Lanczos_2X(t *testing.T) {
 	fxy := 2.0
 	gray := setupTestCaseGray(t)
@@ -135,6 +242,21 @@ func Test_Acceptance_GrayResize_Lanczos_2X(t *testing.T) {
 		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
 	}
 	tearDownTestCase(t, actual, "../res/resize/grayResize_Lanczos_2x.jpg")
+}
+
+func Test_Acceptance_GrayResize_Lanczos_2X_Cropped(t *testing.T) {
+	fxy := 2.0
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	actual, _ := ResizeGray(cropped, fxy, fxy, InterLanczos)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/grayResize_Lanczos_2x_Cropped.jpg")
 }
 
 func Test_Acceptance_GrayResize_Lanczos_0_5X(t *testing.T) {
@@ -150,6 +272,21 @@ func Test_Acceptance_GrayResize_Lanczos_0_5X(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/resize/grayResize_Lanczos_0_5x.jpg")
 }
 
+func Test_Acceptance_GrayResize_Lanczos_0_5X_Cropped(t *testing.T) {
+	fxy := 0.5
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	actual, _ := ResizeGray(cropped, fxy, fxy, InterLanczos)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/grayResize_Lanczos_0_5x_Cropped.jpg")
+}
+
 func Test_Acceptance_RGBAResize_NN_2X(t *testing.T) {
 	fxy := 2.0
 	rgba := setupTestCaseRGBA(t)
@@ -163,6 +300,21 @@ func Test_Acceptance_RGBAResize_NN_2X(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/resize/rgbaResize2x.jpg")
 }
 
+func Test_Acceptance_RGBAResize_NN_2X_Cropped(t *testing.T) {
+	fxy := 2.0
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	actual, _ := ResizeRGBA(cropped, fxy, fxy, InterNearest)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/rgbaResize2x_Cropped.jpg")
+}
+
 func Test_Acceptance_RGBAResize_NN_1_5X(t *testing.T) {
 	fxy := 1.5
 	rgba := setupTestCaseRGBA(t)
@@ -174,6 +326,21 @@ func Test_Acceptance_RGBAResize_NN_1_5X(t *testing.T) {
 		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
 	}
 	tearDownTestCase(t, actual, "../res/resize/rgbaResize1_5x.jpg")
+}
+
+func Test_Acceptance_RGBAResize_NN_1_5X_Cropped(t *testing.T) {
+	fxy := 1.5
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	actual, _ := ResizeRGBA(cropped, fxy, fxy, InterNearest)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/rgbaResize1_5x_Cropped.jpg")
 }
 
 func Test_Acceptance_RGBAResize_NN_2_5_AND_3_5X(t *testing.T) {
@@ -190,6 +357,22 @@ func Test_Acceptance_RGBAResize_NN_2_5_AND_3_5X(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/resize/rgbaResize2_5_and_3_5x.jpg")
 }
 
+func Test_Acceptance_RGBAResize_NN_2_5_AND_3_5_Cropped(t *testing.T) {
+	fx := 2.5
+	fy := 3.5
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	actual, _ := ResizeRGBA(cropped, fx, fy, InterNearest)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fx), Y: int(float64(originalSize.Y) * fy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/rgbaResize2_5_and_3_5x_Cropped.jpg")
+}
+
 func Test_Acceptance_RGBAResize_NN_0_5X(t *testing.T) {
 	fxy := 0.5
 	rgba := setupTestCaseRGBA(t)
@@ -201,6 +384,21 @@ func Test_Acceptance_RGBAResize_NN_0_5X(t *testing.T) {
 		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
 	}
 	tearDownTestCase(t, actual, "../res/resize/rgbaResize0_5x.jpg")
+}
+
+func Test_Acceptance_RGBAResize_NN_0_5X_Cropped(t *testing.T) {
+	fxy := 0.5
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	actual, _ := ResizeRGBA(cropped, fxy, fxy, InterNearest)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/rgbaResize0_5x_Cropped.jpg")
 }
 
 func Test_Acceptance_RGBAResize_Linear_2X(t *testing.T) {
@@ -216,6 +414,21 @@ func Test_Acceptance_RGBAResize_Linear_2X(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/resize/rgbaResize_Linear_2x.jpg")
 }
 
+func Test_Acceptance_RGBAResize_Linear_2X_Cropped(t *testing.T) {
+	fxy := 2.0
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	actual, _ := ResizeRGBA(cropped, fxy, fxy, InterLinear)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/rgbaResize_Linear_2x_Cropped.jpg")
+}
+
 func Test_Acceptance_RGBAResize_CatmullRom_2X(t *testing.T) {
 	fxy := 2.0
 	rgba := setupTestCaseRGBA(t)
@@ -227,6 +440,21 @@ func Test_Acceptance_RGBAResize_CatmullRom_2X(t *testing.T) {
 		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
 	}
 	tearDownTestCase(t, actual, "../res/resize/rgbaResize_CatmullRom_2x.jpg")
+}
+
+func Test_Acceptance_RGBAResize_CatmullRom_2X_Cropped(t *testing.T) {
+	fxy := 2.0
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	actual, _ := ResizeRGBA(cropped, fxy, fxy, InterCatmullRom)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/rgbaResize_CatmullRom_2x_Cropped.jpg")
 }
 
 func Test_Acceptance_RGBAResize_CatmullRom_0_5X(t *testing.T) {
@@ -242,6 +470,21 @@ func Test_Acceptance_RGBAResize_CatmullRom_0_5X(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/resize/rgbaResize_CatmullRom_0_5x.jpg")
 }
 
+func Test_Acceptance_RGBAResize_CatmullRom_0_5X_Cropped(t *testing.T) {
+	fxy := 0.5
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	actual, _ := ResizeRGBA(cropped, fxy, fxy, InterCatmullRom)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/rgbaResize_CatmullRom_0_5x_Cropped.jpg")
+}
+
 func Test_Acceptance_RGBAResize_Lanczos_2X(t *testing.T) {
 	fxy := 2.0
 	rgba := setupTestCaseRGBA(t)
@@ -255,6 +498,21 @@ func Test_Acceptance_RGBAResize_Lanczos_2X(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/resize/rgbaResize_Lanczos_2x.jpg")
 }
 
+func Test_Acceptance_RGBAResize_Lanczos_2X_Cropped(t *testing.T) {
+	fxy := 2.0
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	actual, _ := ResizeRGBA(cropped, fxy, fxy, InterLanczos)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/rgbaResize_Lanczos_2x_Cropped.jpg")
+}
+
 func Test_Acceptance_RGBAResize_Lanczos_0_5X(t *testing.T) {
 	fxy := 0.5
 	rgba := setupTestCaseRGBA(t)
@@ -266,6 +524,21 @@ func Test_Acceptance_RGBAResize_Lanczos_0_5X(t *testing.T) {
 		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
 	}
 	tearDownTestCase(t, actual, "../res/resize/rgbaResize_Lanczos_0_5x.jpg")
+}
+
+func Test_Acceptance_RGBAResize_Lanczos_0_5X_Cropped(t *testing.T) {
+	fxy := 0.5
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	actual, _ := ResizeRGBA(cropped, fxy, fxy, InterLanczos)
+	originalSize := cropped.Bounds().Size()
+	expectedSize := image.Point{X: int(float64(originalSize.X) * fxy), Y: int(float64(originalSize.Y) * fxy)}
+	actualSize := actual.Bounds().Size()
+	if expectedSize.X != actualSize.X || expectedSize.Y != actualSize.Y {
+		t.Errorf("Expected size of [%d, %d] does not match actual size of [%d, %d]!", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
+	}
+	tearDownTestCase(t, actual, "../res/resize/rgbaResize_Lanczos_0_5x_Cropped.jpg")
 }
 
 // ----------------------------------------------------------------------------------

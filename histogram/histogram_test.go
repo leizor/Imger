@@ -1,9 +1,10 @@
 package histogram
 
 import (
-	"github.com/ernyoke/imger/imgio"
 	"image"
 	"testing"
+
+	"github.com/ernyoke/imger/imgio"
 )
 
 // --------------------------------Unit tests---------------------------------------

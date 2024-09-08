@@ -2,10 +2,11 @@ package blur
 
 import (
 	"errors"
-	"github.com/ernyoke/imger/convolution"
-	"github.com/ernyoke/imger/padding"
 	"image"
 	"math"
+
+	"github.com/ernyoke/imger/convolution"
+	"github.com/ernyoke/imger/padding"
 )
 
 // BoxGray applies average blur to a grayscale image. The amount of bluring effect depends on the kernel size, where

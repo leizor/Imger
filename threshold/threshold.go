@@ -53,117 +53,105 @@ const (
 // Threshold returns a 8 bit grayscale image as result which was segmented using one of the following methods:
 // ThreshBinary, ThreshBinaryInv, ThreshTrunc, ThreshToZero, ThreshToZeroInv
 func Threshold(img *image.Gray, t uint8, method Method) (*image.Gray, error) {
-	var setPixel func(*image.Gray, int, int)
+	var transform func(color.Gray) color.Gray
 	switch method {
 	case ThreshBinary:
-		setPixel = func(gray *image.Gray, x int, y int) {
-			pixel := img.GrayAt(x, y).Y
-			if pixel < t {
-				gray.SetGray(x, y, color.Gray{Y: utils.MinUint8})
+		transform = func(pixel color.Gray) color.Gray {
+			if pixel.Y < t {
+				return color.Gray{Y: utils.MinUint8}
 			} else {
-				gray.SetGray(x, y, color.Gray{Y: utils.MaxUint8})
+				return color.Gray{Y: utils.MaxUint8}
 			}
 		}
 	case ThreshBinaryInv:
-		setPixel = func(gray *image.Gray, x int, y int) {
-			pixel := img.GrayAt(x, y).Y
-			if pixel < t {
-				gray.SetGray(x, y, color.Gray{Y: utils.MaxUint8})
+		transform = func(pixel color.Gray) color.Gray {
+			if pixel.Y < t {
+				return color.Gray{Y: utils.MaxUint8}
 			} else {
-				gray.SetGray(x, y, color.Gray{Y: utils.MinUint8})
+				return color.Gray{Y: utils.MinUint8}
 			}
 		}
 	case ThreshTrunc:
-		{
-			setPixel = func(gray *image.Gray, x int, y int) {
-				pixel := img.GrayAt(x, y).Y
-				if pixel < t {
-					gray.SetGray(x, y, color.Gray{Y: pixel})
-				} else {
-					gray.SetGray(x, y, color.Gray{Y: t})
-				}
+		transform = func(pixel color.Gray) color.Gray {
+			if pixel.Y < t {
+				return color.Gray{Y: pixel.Y}
+			} else {
+				return color.Gray{Y: t}
 			}
 		}
 	case ThreshToZero:
-		setPixel = func(gray *image.Gray, x int, y int) {
-			pixel := img.GrayAt(x, y).Y
-			if pixel < t {
-				gray.SetGray(x, y, color.Gray{Y: utils.MinUint8})
+		transform = func(pixel color.Gray) color.Gray {
+			if pixel.Y < t {
+				return color.Gray{Y: utils.MinUint8}
 			} else {
-				gray.SetGray(x, y, color.Gray{Y: pixel})
+				return color.Gray{Y: pixel.Y}
 			}
 		}
 	case ThreshToZeroInv:
-		setPixel = func(gray *image.Gray, x int, y int) {
-			pixel := img.GrayAt(x, y).Y
-			if pixel < t {
-				gray.SetGray(x, y, color.Gray{Y: pixel})
+		transform = func(pixel color.Gray) color.Gray {
+			if pixel.Y < t {
+				return color.Gray{Y: pixel.Y}
 			} else {
-				gray.SetGray(x, y, color.Gray{Y: utils.MinUint8})
+				return color.Gray{Y: utils.MinUint8}
 			}
 		}
 	default:
 		return nil, errors.New("invalid threshold method")
 	}
-	return threshold(img, setPixel), nil
+	return threshold(img, transform), nil
 }
 
 // Threshold16 returns a grayscale image represented on 16 bits as result which was segmented using one of the following
 // Methods: ThreshBinary, ThreshBinaryInv, ThreshTrunc, ThreshToZero, ThreshToZeroInv
 func Threshold16(img *image.Gray16, t uint16, method Method) (*image.Gray16, error) {
-	var setPixel func(*image.Gray16, int, int)
+	var transform func(color.Gray16) color.Gray16
 	switch method {
 	case ThreshBinary:
-		setPixel = func(gray *image.Gray16, x int, y int) {
-			pixel := img.Gray16At(x, y).Y
-			if pixel < t {
-				gray.SetGray16(x, y, color.Gray16{Y: utils.MinUint16})
+		transform = func(pixel color.Gray16) color.Gray16 {
+			if pixel.Y < t {
+				return color.Gray16{Y: utils.MinUint16}
 			} else {
-				gray.SetGray16(x, y, color.Gray16{Y: utils.MaxUint16})
+				return color.Gray16{Y: utils.MaxUint16}
 			}
 		}
 	case ThreshBinaryInv:
-		setPixel = func(gray *image.Gray16, x int, y int) {
-			pixel := img.Gray16At(x, y).Y
-			if pixel < t {
-				gray.SetGray16(x, y, color.Gray16{Y: utils.MaxUint16})
+		transform = func(pixel color.Gray16) color.Gray16 {
+			if pixel.Y < t {
+				return color.Gray16{Y: utils.MaxUint16}
 			} else {
-				gray.SetGray16(x, y, color.Gray16{Y: utils.MinUint16})
+				return color.Gray16{Y: utils.MinUint16}
 			}
 		}
 	case ThreshTrunc:
 		{
-			setPixel = func(gray *image.Gray16, x int, y int) {
-				pixel := img.Gray16At(x, y).Y
-				if pixel < t {
-					gray.SetGray16(x, y, color.Gray16{Y: pixel})
+			transform = func(pixel color.Gray16) color.Gray16 {
+				if pixel.Y < t {
+					return color.Gray16{Y: pixel.Y}
 				} else {
-					gray.SetGray16(x, y, color.Gray16{Y: t})
+					return color.Gray16{Y: t}
 				}
 			}
 		}
 	case ThreshToZero:
-		setPixel = func(gray *image.Gray16, x int, y int) {
-			pixel := img.Gray16At(x, y).Y
-			if pixel < t {
-				gray.SetGray16(x, y, color.Gray16{Y: utils.MinUint16})
+		transform = func(pixel color.Gray16) color.Gray16 {
+			if pixel.Y < t {
+				return color.Gray16{Y: utils.MinUint16}
 			} else {
-				gray.SetGray16(x, y, color.Gray16{Y: pixel})
+				return color.Gray16{Y: pixel.Y}
 			}
 		}
 	case ThreshToZeroInv:
-		setPixel = func(gray *image.Gray16, x int, y int) {
-			pixel := img.Gray16At(x, y).Y
-			if pixel < t {
-				gray.SetGray16(x, y, color.Gray16{pixel})
+		transform = func(pixel color.Gray16) color.Gray16 {
+			if pixel.Y < t {
+				return color.Gray16{Y: pixel.Y}
 			} else {
-				gray.SetGray16(x, y, color.Gray16{Y: utils.MinUint16})
+				return color.Gray16{Y: utils.MinUint16}
 			}
 		}
 	default:
 		return nil, errors.New("invalid threshold method")
 	}
-	return threshold16(img, setPixel), nil
+	return threshold16(img, transform), nil
 }
 
 // OtsuThreshold returns a grayscale image which was segmented using Otsu's adaptive thresholding method.
@@ -174,24 +162,22 @@ func OtsuThreshold(img *image.Gray, method Method) (*image.Gray, error) {
 }
 
 // -------------------------------------------------------------------------------------------------------
-func threshold(img *image.Gray, setPixel func(*image.Gray, int, int)) *image.Gray {
+func threshold(img *image.Gray, transform func(color.Gray) color.Gray) *image.Gray {
 	size := img.Bounds().Size()
-	gray := image.NewGray(img.Bounds())
-	offset := img.Bounds().Min
-	utils.ParallelForEachPixel(size, func(x, y int) {
-		setPixel(gray, x+offset.X, y+offset.Y)
+	res := image.NewGray(image.Rect(0, 0, size.X, size.Y))
+	utils.ForEachGrayPixel(img, func(pixel color.Gray, x, y int) {
+		res.Set(x, y, transform(pixel))
 	})
-	return gray
+	return res
 }
 
-func threshold16(img *image.Gray16, setPixel16 func(*image.Gray16, int, int)) *image.Gray16 {
+func threshold16(img *image.Gray16, transform func(color.Gray16) color.Gray16) *image.Gray16 {
 	size := img.Bounds().Size()
-	gray := image.NewGray16(img.Bounds())
-	offset := img.Bounds().Min
-	utils.ParallelForEachPixel(size, func(x, y int) {
-		setPixel16(gray, x+offset.X, y+offset.Y)
+	res := image.NewGray16(image.Rect(0, 0, size.X, size.Y))
+	utils.ForEachGray16Pixel(img, func(pixel color.Gray16, x, y int) {
+		res.Set(x, y, transform(pixel))
 	})
-	return gray
+	return res
 }
 
 func otsuThresholdValue(img *image.Gray) uint8 {

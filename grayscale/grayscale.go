@@ -9,22 +9,20 @@ import (
 
 // Grayscale takes an image on any type and returns the equivalent grayscale image represented on 8 bits.
 func Grayscale(img image.Image) *image.Gray {
-	gray := image.NewGray(img.Bounds())
 	size := img.Bounds().Size()
-	offset := img.Bounds().Min
-	utils.ParallelForEachPixel(size, func(x, y int) {
-		gray.Set(x+offset.X, y+offset.Y, color.GrayModel.Convert(img.At(x+offset.X, y+offset.Y)))
+	res := image.NewGray(image.Rect(0, 0, size.X, size.Y))
+	utils.ForEachPixel(img, func(pixel color.Color, x, y int) {
+		res.Set(x, y, color.GrayModel.Convert(pixel))
 	})
-	return gray
+	return res
 }
 
 // Grayscale16 takes an image on any type and returns the equivalent grayscale image represented on 16 bits.
 func Grayscale16(img image.Image) *image.Gray16 {
-	gray := image.NewGray16(img.Bounds())
 	size := img.Bounds().Size()
-	offset := img.Bounds().Min
-	utils.ParallelForEachPixel(size, func(x, y int) {
-		gray.Set(x+offset.X, y+offset.Y, color.Gray16Model.Convert(img.At(x+offset.X, y+offset.Y)))
+	res := image.NewGray16(image.Rect(0, 0, size.X, size.Y))
+	utils.ForEachPixel(img, func(pixel color.Color, x, y int) {
+		res.Set(x, y, color.Gray16Model.Convert(pixel))
 	})
-	return gray
+	return res
 }

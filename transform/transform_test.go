@@ -1,11 +1,12 @@
 package transform
 
 import (
-	"github.com/ernyoke/imger/imgio"
-	"github.com/ernyoke/imger/utils"
 	"image"
 	"math"
 	"testing"
+
+	"github.com/ernyoke/imger/imgio"
+	"github.com/ernyoke/imger/utils"
 )
 
 // ---------------------------------Unit tests--------------------------------------
@@ -216,6 +217,16 @@ func Test_Acceptance_RotateGray90(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/transform/roateGray90.jpg")
 }
 
+func Test_Acceptance_RotateGray90_Cropped(t *testing.T) {
+	gray := setupTestCaseGray(t)
+	cropped := gray.SubImage(image.Rect(100, 100, gray.Bounds().Size().X-100, gray.Bounds().Size().Y-100)).(*image.Gray)
+	actual, err := RotateGray(cropped, 90, image.Point{X: 512, Y: 384}, true)
+	if err != nil {
+		t.Errorf("Should not throw error!")
+	}
+	tearDownTestCase(t, actual, "../res/transform/roateGray90_Cropped.jpg")
+}
+
 func Test_Acceptance_RotateGray45(t *testing.T) {
 	gray := setupTestCaseGray(t)
 	actual, err := RotateGray(gray, 45, image.Point{X: 512, Y: 384}, true)
@@ -223,6 +234,16 @@ func Test_Acceptance_RotateGray45(t *testing.T) {
 		t.Errorf("Should not throw error!")
 	}
 	tearDownTestCase(t, actual, "../res/transform/roateGray45.jpg")
+}
+
+func Test_Acceptance_RotateGray45_Cropped(t *testing.T) {
+	gray := setupTestCaseGray(t)
+	cropped := gray.SubImage(image.Rect(100, 100, gray.Bounds().Size().X-100, gray.Bounds().Size().Y-100)).(*image.Gray)
+	actual, err := RotateGray(cropped, 45, image.Point{X: 512, Y: 384}, true)
+	if err != nil {
+		t.Errorf("Should not throw error!")
+	}
+	tearDownTestCase(t, actual, "../res/transform/roateGray45_Cropped.jpg")
 }
 
 func Test_Acceptance_RotateGray22(t *testing.T) {
@@ -234,6 +255,16 @@ func Test_Acceptance_RotateGray22(t *testing.T) {
 	tearDownTestCase(t, actual, "../res/transform/roateGray22.jpg")
 }
 
+func Test_Acceptance_RotateGray22_Cropped(t *testing.T) {
+	gray := setupTestCaseGray(t)
+	cropped := gray.SubImage(image.Rect(100, 100, gray.Bounds().Size().X-100, gray.Bounds().Size().Y-100)).(*image.Gray)
+	actual, err := RotateGray(cropped, 22, image.Point{X: 512, Y: 384}, true)
+	if err != nil {
+		t.Errorf("Should not throw error!")
+	}
+	tearDownTestCase(t, actual, "../res/transform/roateGray22_Cropped.jpg")
+}
+
 func Test_Acceptance_RotateRGBA90(t *testing.T) {
 	rgba := setupTestCaseRGBA(t)
 	actual, err := RotateRGBA(rgba, 90, image.Point{X: 512, Y: 384}, true)
@@ -241,6 +272,16 @@ func Test_Acceptance_RotateRGBA90(t *testing.T) {
 		t.Errorf("Should not throw error!")
 	}
 	tearDownTestCase(t, actual, "../res/transform/roateRGBA90.jpg")
+}
+
+func Test_Acceptance_RotateRGBA90_Cropped(t *testing.T) {
+	rgba := setupTestCaseRGBA(t)
+	cropped := rgba.SubImage(image.Rect(100, 100, rgba.Bounds().Size().X-100, rgba.Bounds().Size().Y-100)).(*image.RGBA)
+	actual, err := RotateRGBA(cropped, 90, image.Point{X: 512, Y: 384}, true)
+	if err != nil {
+		t.Errorf("Should not throw error!")
+	}
+	tearDownTestCase(t, actual, "../res/transform/roateRGBA90_Cropped.jpg")
 }
 
 func Test_Acceptance_RotateRGBA45(t *testing.T) {
@@ -268,4 +309,14 @@ func Test_Acceptance_RotateRGBA45Noresize(t *testing.T) {
 		t.Errorf("Should not throw error!")
 	}
 	tearDownTestCase(t, actual, "../res/transform/roateRGBA45Noresize.jpg")
+}
+
+func Test_Acceptance_RotateRGBA45Noresize_Cropped(t *testing.T) {
+	rgba := setupTestCaseRGBA(t)
+	cropped := rgba.SubImage(image.Rect(100, 100, rgba.Bounds().Size().X-100, rgba.Bounds().Size().Y-100)).(*image.RGBA)
+	actual, err := RotateRGBA(cropped, 45, image.Point{X: 512, Y: 384}, false)
+	if err != nil {
+		t.Errorf("Should not throw error!")
+	}
+	tearDownTestCase(t, actual, "../res/transform/roateRGBA45Noresize_Cropped.jpg")
 }

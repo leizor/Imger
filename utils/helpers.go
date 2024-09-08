@@ -3,10 +3,17 @@ package utils
 import (
 	"image"
 	"image/color"
+	"os"
 )
 
-// ForEachPixel loops through the image and calls f functions for each [x, y] position.
-func ForEachPixel(size image.Point, f func(x int, y int)) {
+func init() {
+	// IteratePixels can optionally run using parallel goroutines.
+	if os.Getenv("IMGER_ENABLE_PARALLEL_FOR_EACH") == "true" {
+		IteratePixels = ParallelForEachPixel
+	}
+}
+
+var IteratePixels = func(size image.Point, f func(x, y int)) {
 	for y := 0; y < size.Y; y++ {
 		for x := 0; x < size.X; x++ {
 			f(x, y)
@@ -14,47 +21,36 @@ func ForEachPixel(size image.Point, f func(x int, y int)) {
 	}
 }
 
-// ForEachGrayPixel loops through the image and calls f functions for each gray pixel.
-func ForEachGrayPixel(img *image.Gray, f func(pixel color.Gray)) {
-	ForEachPixel(img.Bounds().Size(), func(x, y int) {
-		pixel := img.GrayAt(x, y)
-		f(pixel)
+// ForEachPixel iterates through each pixel of an image and calls f, supplying the color
+// and offset-compensated position of that pixel.
+func ForEachPixel(img image.Image, f func(pixel color.Color, x, y int)) {
+	offset := img.Bounds().Min
+	IteratePixels(img.Bounds().Size(), func(x, y int) {
+		f(img.At(x+offset.X, y+offset.Y), x, y)
 	})
 }
 
-// ForEachRGBAPixel loops through the image and calls f functions for each RGBA pixel.
-func ForEachRGBAPixel(img *image.RGBA, f func(pixel color.RGBA)) {
-	ForEachPixel(img.Bounds().Size(), func(x, y int) {
-		pixel := img.RGBAAt(x, y)
-		f(pixel)
+// ForEachGrayPixel is ForEachPixel but for image.Gray images.
+func ForEachGrayPixel(img *image.Gray, f func(pixel color.Gray, x, y int)) {
+	offset := img.Bounds().Min
+	IteratePixels(img.Bounds().Size(), func(x, y int) {
+		f(img.GrayAt(x+offset.X, y+offset.Y), x, y)
 	})
 }
 
-// ForEachRGBARedPixel loops through the image and calls f functions for red component of each RGBA pixel.
-func ForEachRGBARedPixel(img *image.RGBA, f func(r uint8)) {
-	ForEachRGBAPixel(img, func(pixel color.RGBA) {
-		f(pixel.R)
+// ForEachGray16Pixel is ForEachPixel but for image.Gray16 images.
+func ForEachGray16Pixel(img *image.Gray16, f func(pixel color.Gray16, x, y int)) {
+	offset := img.Bounds().Min
+	IteratePixels(img.Bounds().Size(), func(x, y int) {
+		f(img.Gray16At(x+offset.X, y+offset.Y), x, y)
 	})
 }
 
-// ForEachRGBAGreenPixel loops through the image and calls f functions for green component of each RGBA pixel.
-func ForEachRGBAGreenPixel(img *image.RGBA, f func(r uint8)) {
-	ForEachRGBAPixel(img, func(pixel color.RGBA) {
-		f(pixel.G)
-	})
-}
-
-// ForEachRGBABluePixel loops through the image and calls f functions for blue component of each RGBA pixel.
-func ForEachRGBABluePixel(img *image.RGBA, f func(r uint8)) {
-	ForEachRGBAPixel(img, func(pixel color.RGBA) {
-		f(pixel.B)
-	})
-}
-
-// ForEachRGBAAlphaPixel loops through the image and calls f functions for alpha component of each RGBA pixel
-func ForEachRGBAAlphaPixel(img *image.RGBA, f func(r uint8)) {
-	ForEachRGBAPixel(img, func(pixel color.RGBA) {
-		f(pixel.A)
+// ForEachRGBAPixel is ForEachPixel but for image.RGBA images.
+func ForEachRGBAPixel(img *image.RGBA, f func(pixel color.RGBA, x, y int)) {
+	offset := img.Bounds().Min
+	IteratePixels(img.Bounds().Size(), func(x, y int) {
+		f(img.RGBAAt(x+offset.X, y+offset.Y), x, y)
 	})
 }
 
@@ -82,11 +78,11 @@ func ClampF64(value float64, min float64, max float64) float64 {
 
 // GetMax returns the maximum value from a slice
 func GetMax(v []uint64) uint64 {
-	max := v[0]
+	m := v[0]
 	for _, value := range v {
-		if max < value {
-			max = value
+		if m < value {
+			m = value
 		}
 	}
-	return max
+	return m
 }

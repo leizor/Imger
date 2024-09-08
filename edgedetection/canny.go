@@ -2,13 +2,14 @@ package edgedetection
 
 import (
 	"errors"
+	"image"
+	"image/color"
+	"math"
+
 	"github.com/ernyoke/imger/blur"
 	"github.com/ernyoke/imger/grayscale"
 	"github.com/ernyoke/imger/padding"
 	"github.com/ernyoke/imger/utils"
-	"image"
-	"image/color"
-	"math"
 )
 
 // CannyGray computes the edges of a given grayscale image using the Canny edge detection algorithm. The returned image
@@ -42,7 +43,7 @@ func CannyGray(img *image.Gray, lower float64, upper float64, kernelSize uint) (
 
 	// hysteresis
 	hist := threshold(thinEdges, g, lower, upper)
-	//_ = threshold(thinEdges, g, lower, upper)
+	// _ = threshold(thinEdges, g, lower, upper)
 
 	return hist, nil
 }
@@ -105,7 +106,7 @@ func isBiggerThenNeighbours(val float64, neighbour1 float64, neighbour2 float64)
 func nonMaxSuppression(img *image.Gray, g [][]float64, theta [][]float64) *image.Gray {
 	size := img.Bounds().Size()
 	thinEdges := image.NewGray(image.Rect(0, 0, size.X, size.Y))
-	utils.ParallelForEachPixel(size, func(x, y int) {
+	utils.ForEachPixel(img, func(_ color.Color, x, y int) {
 		isLocalMax := false
 		if x > 0 && x < size.X-1 && y > 0 && y < size.Y-1 {
 			switch theta[x][y] {
@@ -137,8 +138,7 @@ func nonMaxSuppression(img *image.Gray, g [][]float64, theta [][]float64) *image
 func threshold(img *image.Gray, g [][]float64, lowerBound float64, upperBound float64) *image.Gray {
 	size := img.Bounds().Size()
 	res := image.NewGray(image.Rect(0, 0, size.X, size.Y))
-	utils.ParallelForEachPixel(size, func(x int, y int) {
-		p := img.GrayAt(x, y)
+	utils.ForEachGrayPixel(img, func(p color.Gray, x, y int) {
 		if p.Y == utils.MaxUint8 {
 			if g[x][y] < lowerBound {
 				res.SetGray(x, y, color.Gray{Y: utils.MinUint8})
@@ -148,8 +148,7 @@ func threshold(img *image.Gray, g [][]float64, lowerBound float64, upperBound fl
 			}
 		}
 	})
-	utils.ParallelForEachPixel(size, func(x int, y int) {
-		p := img.GrayAt(x, y)
+	utils.ForEachGrayPixel(img, func(p color.Gray, x, y int) {
 		if p.Y == utils.MaxUint8 && x > 0 && x < size.X-1 && y > 0 && y < size.Y-1 {
 			if g[x][y] >= lowerBound && g[x][y] <= upperBound {
 				if checkNeighbours(x, y, res) {

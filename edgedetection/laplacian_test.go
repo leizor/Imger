@@ -1,10 +1,11 @@
 package edgedetection
 
 import (
-	"github.com/ernyoke/imger/imgio"
-	"github.com/ernyoke/imger/padding"
 	"image"
 	"testing"
+
+	"github.com/ernyoke/imger/imgio"
+	"github.com/ernyoke/imger/padding"
 )
 
 // -----------------------------Acceptance tests------------------------------------
@@ -40,6 +41,13 @@ func Test_Acceptance_LaplacianGrayK4(t *testing.T) {
 	tearDownTestCaseLapl(t, laplacian, "../res/edge/laplacianGrayK4.png")
 }
 
+func Test_Acceptance_LaplacianGrayK4_Cropped(t *testing.T) {
+	gray := setupTestCaseGrayLapl(t)
+	cropped := gray.SubImage(image.Rect(100, 100, gray.Bounds().Size().X-100, gray.Bounds().Size().Y-100)).(*image.Gray)
+	laplacian, _ := LaplacianGray(cropped, padding.BorderReflect, K4)
+	tearDownTestCaseLapl(t, laplacian, "../res/edge/laplacianGrayK4_Cropped.png")
+}
+
 func Test_Acceptance_LaplacianGrayK8(t *testing.T) {
 	gray := setupTestCaseGrayLapl(t)
 	laplacian, _ := LaplacianGray(gray, padding.BorderReflect, K8)
@@ -50,6 +58,13 @@ func Test_Acceptance_LaplacianRGBAK4(t *testing.T) {
 	rgba := setupTestCaseRGBALapl(t)
 	laplacian, _ := LaplacianRGBA(rgba, padding.BorderReflect, K4)
 	tearDownTestCaseLapl(t, laplacian, "../res/edge/laplacianRGBAK4.png")
+}
+
+func Test_Acceptance_LaplacianRGBAK4_Cropped(t *testing.T) {
+	rgba := setupTestCaseRGBALapl(t)
+	cropped := rgba.SubImage(image.Rect(100, 100, rgba.Bounds().Size().X-100, rgba.Bounds().Size().Y-100)).(*image.RGBA)
+	laplacian, _ := LaplacianRGBA(cropped, padding.BorderReflect, K4)
+	tearDownTestCaseLapl(t, laplacian, "../res/edge/laplacianRGBAK4_Cropped.png")
 }
 
 func Test_Acceptance_LaplacianRGBAK8(t *testing.T) {

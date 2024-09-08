@@ -2,10 +2,11 @@ package resize
 
 import (
 	"errors"
-	"github.com/ernyoke/imger/utils"
 	"image"
 	"image/color"
 	"math"
+
+	"github.com/ernyoke/imger/utils"
 )
 
 // Interpolation method types
@@ -24,26 +25,16 @@ const (
 
 func resizeNearestGray(img *image.Gray, fx float64, fy float64) (*image.Gray, error) {
 	oldSize := img.Bounds().Size()
+	oldOffset := img.Bounds().Min
 	newSize := image.Point{X: int(float64(oldSize.X) * fx), Y: int(float64(oldSize.Y) * fy)}
-	newImg := image.NewGray(image.Rect(0, 0, newSize.X, newSize.Y))
-	utils.ParallelForEachPixel(newSize, func(x int, y int) {
-		oldXTemp := float64(x) / fx
-		var oldX int
-		if fraction := oldXTemp - float64(int(oldXTemp)); fraction >= 0.5 {
-			oldX = int(oldXTemp + 1)
-		} else {
-			oldX = int(oldXTemp)
-		}
-		oldYTemp := float64(y) / fy
-		var oldY int
-		if fraction := oldYTemp - float64(int(oldYTemp)); fraction >= 0.5 {
-			oldY = int(oldYTemp + 1)
-		} else {
-			oldY = int(oldYTemp)
-		}
-		newImg.SetGray(x, y, img.GrayAt(oldX, oldY))
+	res := image.NewGray(image.Rect(0, 0, newSize.X, newSize.Y))
+	utils.IteratePixels(newSize, func(x, y int) {
+		oldX := int(math.Round(float64(x)/fx)) + oldOffset.X
+		oldY := int(math.Round(float64(y)/fy)) + oldOffset.Y
+
+		res.SetGray(x, y, img.GrayAt(oldX, oldY))
 	})
-	return newImg, nil
+	return res, nil
 }
 
 func resizeLinearGray(img *image.Gray, fx float64, fy float64) (*image.Gray, error) {
@@ -87,6 +78,7 @@ func resizeLanczosGray(img *image.Gray, fx float64, fy float64) (*image.Gray, er
 
 func resizeHorizontalGray(img *image.Gray, fx float64, filter Filter) (*image.Gray, error) {
 	originalSize := img.Bounds().Size()
+	offset := img.Bounds().Min
 	newWidth := int(float64(originalSize.X) * fx)
 	res := image.NewGray(image.Rect(0, 0, newWidth, originalSize.Y))
 	dfx := 1 / fx
@@ -101,7 +93,7 @@ func resizeHorizontalGray(img *image.Gray, fx float64, filter Filter) (*image.Gr
 			var sum float64
 			for i := start; i < end; i++ {
 				filterValue := filter.Interpolate(float64(i)-ix) / fx
-				pix := img.GrayAt(i, y)
+				pix := img.GrayAt(i+offset.X, y+offset.Y)
 				fPix += float64(pix.Y) * filterValue
 				sum += filterValue
 			}
@@ -113,6 +105,7 @@ func resizeHorizontalGray(img *image.Gray, fx float64, filter Filter) (*image.Gr
 
 func resizeVerticalGray(img *image.Gray, fy float64, filter Filter) (*image.Gray, error) {
 	originalSize := img.Bounds().Size()
+	offset := img.Bounds().Min
 	newHeight := int(float64(originalSize.Y) * fy)
 	res := image.NewGray(image.Rect(0, 0, originalSize.X, newHeight))
 	dfy := 1 / fy
@@ -127,7 +120,7 @@ func resizeVerticalGray(img *image.Gray, fy float64, filter Filter) (*image.Gray
 			var fPix float64
 			for i := start; i < end; i++ {
 				filterValue := filter.Interpolate(float64(i)-iy) / fy
-				pix := img.GrayAt(x, i)
+				pix := img.GrayAt(x+offset.X, i+offset.Y)
 				fPix += float64(pix.Y) * filterValue
 				sum += filterValue
 			}
@@ -139,26 +132,16 @@ func resizeVerticalGray(img *image.Gray, fy float64, filter Filter) (*image.Gray
 
 func resizeNearestRGBA(img *image.RGBA, fx float64, fy float64) (*image.RGBA, error) {
 	oldSize := img.Bounds().Size()
+	oldOffset := img.Bounds().Min
 	newSize := image.Point{X: int(float64(oldSize.X) * fx), Y: int(float64(oldSize.Y) * fy)}
-	newImg := image.NewRGBA(image.Rect(0, 0, newSize.X, newSize.Y))
-	utils.ParallelForEachPixel(newSize, func(x int, y int) {
-		oldXTemp := float64(x) / fx
-		var oldX int
-		if fraction := oldXTemp - float64(int(oldXTemp)); fraction >= 0.5 {
-			oldX = int(oldXTemp + 1)
-		} else {
-			oldX = int(oldXTemp)
-		}
-		oldYTemp := float64(y) / fy
-		var oldY int
-		if fraction := oldYTemp - float64(int(oldYTemp)); fraction >= 0.5 {
-			oldY = int(oldYTemp + 1)
-		} else {
-			oldY = int(oldYTemp)
-		}
-		newImg.SetRGBA(x, y, img.RGBAAt(oldX, oldY))
+	res := image.NewRGBA(image.Rect(0, 0, newSize.X, newSize.Y))
+	utils.IteratePixels(newSize, func(x, y int) {
+		oldX := int(math.Round(float64(x)/fx)) + oldOffset.X
+		oldY := int(math.Round(float64(y)/fy)) + oldOffset.Y
+
+		res.SetRGBA(x, y, img.RGBAAt(oldX, oldY))
 	})
-	return newImg, nil
+	return res, nil
 }
 
 func resizeLinearRGBA(img *image.RGBA, fx float64, fy float64) (*image.RGBA, error) {
@@ -202,6 +185,8 @@ func resizeLanczosRGBA(img *image.RGBA, fx float64, fy float64) (*image.RGBA, er
 
 func resizeHorizontalRGBA(img *image.RGBA, fx float64, filter Filter) (*image.RGBA, error) {
 	originalSize := img.Bounds().Size()
+	offset := img.Bounds().Min
+
 	newWidth := int(float64(originalSize.X) * fx)
 	res := image.NewRGBA(image.Rect(0, 0, newWidth, originalSize.Y))
 	dfx := 1 / fx
@@ -219,7 +204,7 @@ func resizeHorizontalRGBA(img *image.RGBA, fx float64, filter Filter) (*image.RG
 			var sum float64
 			for i := start; i < end; i++ {
 				filterValue := filter.Interpolate(float64(i)-ix) / fx
-				pix := img.RGBAAt(i, y)
+				pix := img.RGBAAt(i+offset.X, y+offset.Y)
 				fPixR += float64(pix.R) * filterValue
 				fPixG += float64(pix.G) * filterValue
 				fPixB += float64(pix.B) * filterValue
@@ -237,6 +222,8 @@ func resizeHorizontalRGBA(img *image.RGBA, fx float64, filter Filter) (*image.RG
 
 func resizeVerticalRGBA(img *image.RGBA, fy float64, filter Filter) (*image.RGBA, error) {
 	originalSize := img.Bounds().Size()
+	offset := img.Bounds().Min
+
 	newHeight := int(float64(originalSize.Y) * fy)
 	res := image.NewRGBA(image.Rect(0, 0, originalSize.X, newHeight))
 	dfy := 1 / fy
@@ -254,7 +241,7 @@ func resizeVerticalRGBA(img *image.RGBA, fy float64, filter Filter) (*image.RGBA
 			var sum float64
 			for i := start; i < end; i++ {
 				filterValue := filter.Interpolate(float64(i)-iy) / fy
-				pix := img.RGBAAt(x, i)
+				pix := img.RGBAAt(x+offset.X, i+offset.Y)
 				fPixR += float64(pix.R) * filterValue
 				fPixG += float64(pix.G) * filterValue
 				fPixB += float64(pix.B) * filterValue
@@ -276,8 +263,7 @@ func resizeVerticalRGBA(img *image.RGBA, fy float64, filter Filter) (*image.RGBA
 // currently the following methods are supported: InterNearest, InterLinear, InterCatmullRom, InterLanczos.
 // Example of usage:
 //
-//		res, err := resize.ResizeGray(img, 2.5, 3.5, resize.InterLinear)
-//
+//	res, err := resize.ResizeGray(img, 2.5, 3.5, resize.InterLinear)
 func ResizeGray(img *image.Gray, fx float64, fy float64, interpolation Interpolation) (*image.Gray, error) {
 	if fx < 0 || fy < 0 {
 		return nil, errors.New("scale value should be greater then 0")
@@ -301,8 +287,7 @@ func ResizeGray(img *image.Gray, fx float64, fy float64, interpolation Interpola
 // currently the following methods are supported: InterNearest, InterLinear, InterCatmullRom, InterLanczos.
 // Example of usage:
 //
-//		res, err := resize.ResizeRGBA(img, 2.5, 3.5, resize.InterLinear)
-//
+//	res, err := resize.ResizeRGBA(img, 2.5, 3.5, resize.InterLinear)
 func ResizeRGBA(img *image.RGBA, fx float64, fy float64, interpolation Interpolation) (*image.RGBA, error) {
 	if fx < 0 || fy < 0 {
 		return nil, errors.New("scale value should be greater then 0")

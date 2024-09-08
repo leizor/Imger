@@ -1,10 +1,11 @@
 package padding
 
 import (
-	"github.com/ernyoke/imger/imgio"
-	"github.com/ernyoke/imger/utils"
 	"image"
 	"testing"
+
+	"github.com/ernyoke/imger/imgio"
+	"github.com/ernyoke/imger/utils"
 )
 
 // ---------------------------------Unit tests--------------------------------------
@@ -61,7 +62,7 @@ func Test_GrayPaddingBorderConstant_2pxPadding(t *testing.T) {
 	paddingSize := image.Point{X: 5, Y: 5}
 	anchor := image.Point{X: 2, Y: 2}
 	actual, _ := PaddingGray(&gray, paddingSize, anchor, BorderConstant)
-	//utils.PrintGray(t, actual)
+	// utils.PrintGray(t, actual)
 	utils.CompareGrayImages(t, &expected, actual)
 }
 
@@ -91,7 +92,7 @@ func Test_GrayPaddingBorderConstant_1_3pxPadding(t *testing.T) {
 	paddingSize := image.Point{X: 5, Y: 5}
 	anchor := image.Point{X: 1, Y: 1}
 	actual, _ := PaddingGray(&gray, paddingSize, anchor, BorderConstant)
-	//utils.PrintGray(t, actual)
+	// utils.PrintGray(t, actual)
 	utils.CompareGrayImages(t, &expected, actual)
 }
 
@@ -148,7 +149,7 @@ func Test_GrayPaddingBorderReplicate_2pxPadding(t *testing.T) {
 	paddingSize := image.Point{X: 5, Y: 5}
 	anchor := image.Point{X: 2, Y: 2}
 	actual, _ := PaddingGray(&gray, paddingSize, anchor, BorderReplicate)
-	//utils.PrintGray(t, actual)
+	// utils.PrintGray(t, actual)
 	utils.CompareGrayImages(t, &expected, actual)
 }
 
@@ -178,7 +179,7 @@ func Test_GrayPaddingBorderReplicate_1_3pxPadding(t *testing.T) {
 	paddingSize := image.Point{X: 5, Y: 5}
 	anchor := image.Point{X: 1, Y: 1}
 	actual, _ := PaddingGray(&gray, paddingSize, anchor, BorderReplicate)
-	//utils.PrintGray(t, actual)
+	// utils.PrintGray(t, actual)
 	utils.CompareGrayImages(t, &expected, actual)
 }
 
@@ -207,7 +208,7 @@ func Test_GrayPaddingBorderReflect_1_3pxPadding(t *testing.T) {
 	paddingSize := image.Point{X: 5, Y: 4}
 	anchor := image.Point{X: 1, Y: 1}
 	actual, _ := PaddingGray(&gray, paddingSize, anchor, BorderReflect)
-	//utils.PrintGray(t, actual)
+	// utils.PrintGray(t, actual)
 	utils.CompareGrayImages(t, &expected, actual)
 }
 
@@ -239,7 +240,7 @@ func Test_GrayPaddingBorderReflect_2pxPadding(t *testing.T) {
 	paddingSize := image.Point{X: 5, Y: 5}
 	anchor := image.Point{X: 2, Y: 2}
 	actual, _ := PaddingGray(&gray, paddingSize, anchor, BorderReflect)
-	//utils.PrintGray(t, actual)
+	// utils.PrintGray(t, actual)
 	utils.CompareGrayImages(t, &expected, actual)
 }
 
@@ -283,10 +284,26 @@ func Test_Acceptance_GrayPaddingBorderConstantDistortedAnchor(t *testing.T) {
 	tearDownTestCase(t, padded, "../res/padding/grayPaddingBorderConstantDistortedAnchor.jpg")
 }
 
+func Test_Acceptance_GrayPaddingBorderConstant_Cropped(t *testing.T) {
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	padded, _ := PaddingGray(cropped, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, BorderConstant)
+	tearDownTestCase(t, padded, "../res/padding/grayPaddingBorderConstantCropped.jpg")
+}
+
 func Test_Acceptance_GrayPaddingBorderReplicate(t *testing.T) {
 	gray := setupTestCaseGray(t)
 	padded, _ := PaddingGray(gray, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, BorderReplicate)
 	tearDownTestCase(t, padded, "../res/padding/grayPaddingBorderReplicate.jpg")
+}
+
+func Test_Acceptance_GrayPaddingBorderReplicate_Cropped(t *testing.T) {
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	padded, _ := PaddingGray(cropped, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, BorderReplicate)
+	tearDownTestCase(t, padded, "../res/padding/grayPaddingBorderReplicateCropped.jpg")
 }
 
 func Test_Acceptance_GrayPaddingBorderReflect(t *testing.T) {
@@ -295,10 +312,26 @@ func Test_Acceptance_GrayPaddingBorderReflect(t *testing.T) {
 	tearDownTestCase(t, padded, "../res/padding/grayPaddingBorderReflect.jpg")
 }
 
+func Test_Acceptance_GrayPaddingBorderReflect_Cropped(t *testing.T) {
+	gray := setupTestCaseGray(t)
+	size := gray.Bounds().Size()
+	cropped := gray.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.Gray)
+	padded, _ := PaddingGray(cropped, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, BorderReflect)
+	tearDownTestCase(t, padded, "../res/padding/grayPaddingBorderReflectCropped.jpg")
+}
+
 func Test_Acceptance_RGBAPaddingBorderConstant(t *testing.T) {
 	rgba := setupTestCaseRGBA(t)
 	padded, _ := PaddingRGBA(rgba, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, BorderConstant)
 	tearDownTestCase(t, padded, "../res/padding/rgbaPaddedBorderConstant.jpg")
+}
+
+func Test_Acceptance_RGBAPaddingBorderConstant_Cropped(t *testing.T) {
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	padded, _ := PaddingRGBA(cropped, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, BorderConstant)
+	tearDownTestCase(t, padded, "../res/padding/rgbaPaddedBorderConstantCropped.jpg")
 }
 
 func Test_Acceptance_RGBAPaddingBorderReplicate(t *testing.T) {
@@ -307,10 +340,26 @@ func Test_Acceptance_RGBAPaddingBorderReplicate(t *testing.T) {
 	tearDownTestCase(t, padded, "../res/padding/rgbaPaddedBorderReplicate.jpg")
 }
 
+func Test_Acceptance_RGBAPaddingBorderReplicate_Cropped(t *testing.T) {
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	padded, _ := PaddingRGBA(cropped, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, BorderReplicate)
+	tearDownTestCase(t, padded, "../res/padding/rgbaPaddedBorderReplicateCropped.jpg")
+}
+
 func Test_Acceptance_RGBAPaddingBorderReflect(t *testing.T) {
 	rgba := setupTestCaseRGBA(t)
 	padded, _ := PaddingRGBA(rgba, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, BorderReflect)
 	tearDownTestCase(t, padded, "../res/padding/rgbaPaddedBorderReflect.jpg")
+}
+
+func Test_Acceptance_RGBAPaddingBorderReflect_Cropped(t *testing.T) {
+	rgba := setupTestCaseRGBA(t)
+	size := rgba.Bounds().Size()
+	cropped := rgba.SubImage(image.Rect(100, 100, size.X-100, size.Y-100)).(*image.RGBA)
+	padded, _ := PaddingRGBA(cropped, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, BorderReflect)
+	tearDownTestCase(t, padded, "../res/padding/rgbaPaddedBorderReflectCropped.jpg")
 }
 
 // ---------------------------------------------------------------------------------

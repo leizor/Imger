@@ -17,12 +17,16 @@ func CompareGrayImages(t *testing.T, expected *image.Gray, actual *image.Gray) {
 	if !expectedSize.Eq(actualSize) {
 		t.Fatalf("expected (size: %d %d) and actual (size: %d %d) have different sizes:", expectedSize.X, expectedSize.Y, actualSize.X, actualSize.Y)
 	}
+
+	expectedOffset := expected.Bounds().Min
+	actualOffset := actual.Bounds().Min
+
 	for x := 0; x < expected.Bounds().Size().X; x++ {
 		for y := 0; y < expected.Bounds().Size().Y; y++ {
-			c1 := expected.GrayAt(x, y)
-			c2 := actual.GrayAt(x, y)
+			c1 := expected.GrayAt(x+expectedOffset.X, y+expectedOffset.Y)
+			c2 := actual.GrayAt(x+actualOffset.X, y+actualOffset.Y)
 			if c1.Y != c2.Y {
-				t.Errorf("Expected gray: %d - actual gray: %d at: %d %d", c1.Y, c2.Y, y, x)
+				t.Errorf("Expected gray: 0x%X - actual gray: 0x%X at: (%d, %d)", c1.Y, c2.Y, x, y)
 			}
 		}
 	}

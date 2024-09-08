@@ -1,8 +1,9 @@
 package resize
 
 import (
-	"github.com/ernyoke/imger/utils"
 	"testing"
+
+	"github.com/ernyoke/imger/utils"
 )
 
 // --------------------------------Unit tests----------------------------------------

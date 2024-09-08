@@ -1,9 +1,10 @@
 package edgedetection
 
 import (
-	"github.com/ernyoke/imger/imgio"
 	"image"
 	"testing"
+
+	"github.com/ernyoke/imger/imgio"
 )
 
 // -----------------------------Acceptance tests------------------------------------
@@ -41,6 +42,16 @@ func Test_Acceptance_CannyGray(t *testing.T) {
 	tearDownTestCase(t, cny, "../res/edge/cannygray.jpg")
 }
 
+func Test_Acceptance_CannyGray_Cropped(t *testing.T) {
+	gray := setupTestCaseGray(t)
+	cropped := gray.SubImage(image.Rect(100, 50, gray.Bounds().Size().X-100, gray.Bounds().Size().Y-50)).(*image.Gray)
+	cny, err := CannyGray(cropped, 15, 45, 5)
+	if err != nil {
+		t.Fatalf("Should not reach this point!")
+	}
+	tearDownTestCase(t, cny, "../res/edge/cannygrayCropped.jpg")
+}
+
 func Test_Acceptance_CannyRGBA(t *testing.T) {
 	rgba := setupTestCaseRGBA(t)
 	cny, err := CannyRGBA(rgba, 15, 45, 5)
@@ -48,4 +59,14 @@ func Test_Acceptance_CannyRGBA(t *testing.T) {
 		t.Fatalf("Should not reach this point!")
 	}
 	tearDownTestCase(t, cny, "../res/edge/cannyrgba.jpg")
+}
+
+func Test_Acceptance_CannyRGBA_Cropped(t *testing.T) {
+	rgba := setupTestCaseRGBA(t)
+	cropped := rgba.SubImage(image.Rect(100, 50, rgba.Bounds().Size().X-100, rgba.Bounds().Size().Y-50)).(*image.RGBA)
+	cny, err := CannyRGBA(cropped, 15, 45, 5)
+	if err != nil {
+		t.Fatalf("Should not reach this point!")
+	}
+	tearDownTestCase(t, cny, "../res/edge/cannyrgbaCropped.jpg")
 }

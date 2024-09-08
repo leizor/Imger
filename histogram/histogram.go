@@ -1,9 +1,10 @@
 package histogram
 
 import (
-	"github.com/ernyoke/imger/utils"
 	"image"
 	"image/color"
+
+	"github.com/ernyoke/imger/utils"
 )
 
 const hsize = 256
@@ -13,7 +14,7 @@ const channels = 3
 // distribution of the pixel values.
 func HistogramGray(img *image.Gray) [hsize]uint64 {
 	var res [hsize]uint64
-	utils.ForEachGrayPixel(img, func(pixel color.Gray) {
+	utils.ForEachGrayPixel(img, func(pixel color.Gray, _, _ int) {
 		res[pixel.Y]++
 	})
 	return res
@@ -23,8 +24,8 @@ func HistogramGray(img *image.Gray) [hsize]uint64 {
 // containing distribution of the pixel values.
 func HistogramRGBARed(img *image.RGBA) [hsize]uint64 {
 	var res [hsize]uint64
-	utils.ForEachRGBARedPixel(img, func(red uint8) {
-		res[red]++
+	utils.ForEachRGBAPixel(img, func(pixel color.RGBA, _, _ int) {
+		res[pixel.R]++
 	})
 	return res
 }
@@ -33,8 +34,8 @@ func HistogramRGBARed(img *image.RGBA) [hsize]uint64 {
 // containing distribution of the pixel values.
 func HistogramRGBAGreen(img *image.RGBA) [hsize]uint64 {
 	var res [hsize]uint64
-	utils.ForEachRGBAGreenPixel(img, func(green uint8) {
-		res[green]++
+	utils.ForEachRGBAPixel(img, func(pixel color.RGBA, _, _ int) {
+		res[pixel.G]++
 	})
 	return res
 }
@@ -43,8 +44,8 @@ func HistogramRGBAGreen(img *image.RGBA) [hsize]uint64 {
 // containing distribution of the pixel values.
 func HistogramRGBABlue(img *image.RGBA) [hsize]uint64 {
 	var res [hsize]uint64
-	utils.ForEachRGBABluePixel(img, func(blue uint8) {
-		res[blue]++
+	utils.ForEachRGBAPixel(img, func(pixel color.RGBA, _, _ int) {
+		res[pixel.B]++
 	})
 	return res
 }
@@ -53,7 +54,7 @@ func HistogramRGBABlue(img *image.RGBA) [hsize]uint64 {
 // containing distribution of color values from each RGBA channel.
 func HistogramRGBA(img *image.RGBA) [channels][hsize]uint64 {
 	var res [channels][hsize]uint64
-	utils.ForEachRGBAPixel(img, func(pixel color.RGBA) {
+	utils.ForEachRGBAPixel(img, func(pixel color.RGBA, _, _ int) {
 		res[0][pixel.R]++
 		res[1][pixel.G]++
 		res[2][pixel.B]++
@@ -107,7 +108,7 @@ func DrawHistogramRGBA(img *image.RGBA, size image.Point) *image.RGBA {
 	return res
 }
 
-//---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
 func drawerFunc(size image.Point, getNormAt func(i int) uint64, setPixel func(x, y int)) {
 	scaleX := float64(size.X) / float64(hsize)
 	for i := 0; i < hsize; i++ {

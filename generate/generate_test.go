@@ -1,22 +1,14 @@
 package generate
 
 import (
-	"github.com/ernyoke/imger/imgio"
 	"image"
 	"image/color"
 	"testing"
+
+	"github.com/ernyoke/imger/imgio"
 )
 
 // -----------------------------Acceptance tests------------------------------------
-func setupTestCaseRGBA(t *testing.T) *image.RGBA {
-	path := "../res/girl.jpg"
-	img, err := imgio.ImreadRGBA(path)
-	if err != nil {
-		t.Errorf("Could not read image from path: %s", path)
-	}
-	return img
-}
-
 func tearDownTestCase(t *testing.T, img image.Image, path string) {
 	err := imgio.Imwrite(img, path)
 	if err != nil {

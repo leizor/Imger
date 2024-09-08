@@ -1,11 +1,12 @@
 package blur
 
 import (
+	"image"
+	"testing"
+
 	"github.com/ernyoke/imger/imgio"
 	"github.com/ernyoke/imger/padding"
 	"github.com/ernyoke/imger/utils"
-	"image"
-	"testing"
 )
 
 // ---------------------------------Unit tests------------------------------------
@@ -21,7 +22,7 @@ func TestGrayGaussianBlurZeroRadius(t *testing.T) {
 	}
 	_, err := GaussianBlurRGBA(&input, 0, 6, padding.BorderReflect)
 	if err != nil {
-		//ok
+		// ok
 	} else {
 		t.Fatal("no error thrown")
 	}
@@ -76,7 +77,7 @@ func TestRGBAGaussianBlurOneRadius(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	//utils.PrintRGBA(t, actual)
+	// utils.PrintRGBA(t, actual)
 	utils.CompareRGBAImagesWithOffset(t, expected, actual, 1)
 }
 
@@ -114,10 +115,24 @@ func Test_Acceptance_GrayBlurInt(t *testing.T) {
 	tearDownTestCase(t, blured, "../res/blur/grayBlur.jpg")
 }
 
+func Test_Acceptance_GrayBlurInt_Cropped(t *testing.T) {
+	gray := setupTestCaseGray(t)
+	cropped := gray.SubImage(image.Rect(100, 100, gray.Bounds().Size().X-100, gray.Bounds().Size().Y-100)).(*image.Gray)
+	blurred, _ := BoxGray(cropped, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, padding.BorderReflect)
+	tearDownTestCase(t, blurred, "../res/blur/grayBlurCropped.jpg")
+}
+
 func Test_Acceptance_RGBABlurInt(t *testing.T) {
 	rgba := setupTestCaseRGBA(t)
 	blured, _ := BoxRGBA(rgba, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, padding.BorderReflect)
 	tearDownTestCase(t, blured, "../res/blur/rgbaBlur.jpg")
+}
+
+func Test_Acceptance_RGBABlurInt_Cropped(t *testing.T) {
+	rgba := setupTestCaseRGBA(t)
+	cropped := rgba.SubImage(image.Rect(100, 100, rgba.Bounds().Size().X-100, rgba.Bounds().Size().Y-100)).(*image.RGBA)
+	blurred, _ := BoxRGBA(cropped, image.Point{X: 15, Y: 15}, image.Point{X: 8, Y: 8}, padding.BorderReflect)
+	tearDownTestCase(t, blurred, "../res/blur/rgbaBlurCropped.jpg")
 }
 
 func Test_Acceptance_GrayGaussianBlurInt(t *testing.T) {
@@ -126,10 +141,24 @@ func Test_Acceptance_GrayGaussianBlurInt(t *testing.T) {
 	tearDownTestCase(t, blured, "../res/blur/grayGaussianBlur.jpg")
 }
 
+func Test_Acceptance_GrayGaussianBlurInt_Cropped(t *testing.T) {
+	gray := setupTestCaseGray(t)
+	cropped := gray.SubImage(image.Rect(100, 100, gray.Bounds().Size().X-100, gray.Bounds().Size().Y-100)).(*image.Gray)
+	blured, _ := GaussianBlurGray(cropped, 7, 6, padding.BorderReflect)
+	tearDownTestCase(t, blured, "../res/blur/grayGaussianBlurCropped.jpg")
+}
+
 func Test_Acceptance_RGBAGaussianBlurInt(t *testing.T) {
 	rgba := setupTestCaseRGBA(t)
 	blured, _ := GaussianBlurRGBA(rgba, 5, 500, padding.BorderReflect)
 	tearDownTestCase(t, blured, "../res/blur/rgbaGaussianBlur.jpg")
+}
+
+func Test_Acceptance_RGBAGaussianBlurInt_Cropped(t *testing.T) {
+	rgba := setupTestCaseRGBA(t)
+	cropped := rgba.SubImage(image.Rect(100, 100, rgba.Bounds().Size().X-100, rgba.Bounds().Size().Y-100)).(*image.RGBA)
+	blured, _ := GaussianBlurRGBA(cropped, 5, 500, padding.BorderReflect)
+	tearDownTestCase(t, blured, "../res/blur/rgbaGaussianBlurCropped.jpg")
 }
 
 // ----------------------------------------------------------------------------------
