@@ -2,6 +2,7 @@ package imgio
 
 import (
 	"image"
+	"os"
 	"testing"
 )
 
@@ -105,6 +106,9 @@ func Test_Imwrite_InvalidExtension(t *testing.T) {
 		t.Fatal("Could not read file!")
 	}
 	outPath := "../res/io/invalid.xxx"
+	t.Cleanup(func() {
+		_ = os.Remove(outPath)
+	})
 	errOut := Imwrite(img, outPath)
 	if errOut != nil {
 		// ok
